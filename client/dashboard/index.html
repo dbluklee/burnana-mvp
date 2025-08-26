@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Burnana 대시보드</title>
+    <title>웅갈비 대시보드</title>
     <style>
         * {
             margin: 0;
@@ -13,512 +13,769 @@
 
         body {
             font-family: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f5f7fa;
-            color: #333;
+            background: #1a1a1a;
+            color: #ffffff;
         }
 
         .dashboard {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
+            display: flex;
+            flex-direction: column;
             height: 100vh;
-            gap: 24px;
-            padding: 24px;
+        }
+
+        .main-header {
+            background: #000000;
+            color: white;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            flex: 1;
+            gap: 0;
         }
 
         .main-section {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
+            background: #000000;
             display: flex;
             flex-direction: column;
         }
 
         .side-panel {
+            background: #000000;
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
 
-        .panel-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
+
+
+        .restaurant-name {
+            font-size: 20px;
+            font-weight: 400;
+            color: #cccccc;
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 24px;
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .datetime {
+            font-size: 20px;
+            color: #cccccc;
+        }
+
+        .nav-bar {
+            background: #000000;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
+        .room-tabs-container {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
         }
 
-        .status-badge {
-            background: rgba(255, 255, 255, 0.2);
+        .room-tabs {
+            display: flex;
+            gap: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .room-tab {
             padding: 8px 16px;
-            border-radius: 20px;
+            background: transparent;
+            color: #cccccc;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0;
-            background: #f8faff;
-            border-bottom: 1px solid #e2e8f0;
+        .room-tab.active {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid #cccccc;
         }
 
-        .stat-item {
-            padding: 20px;
-            text-align: center;
-            border-right: 1px solid #e2e8f0;
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
-        .stat-item:last-child {
-            border-right: none;
+        .nav-arrow {
+            background: #333;
+            border: none;
+            color: #cccccc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .stat-number {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 4px;
+        .nav-arrow.visible {
+            opacity: 1;
         }
 
-        .stat-label {
-            font-size: 13px;
-            color: #64748b;
-            font-weight: 500;
+        .settings-btn {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 0;
+            cursor: pointer;
+            font-size: 32px;
+            transition: color 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            color: #ffffff;
         }
 
         .tables-container {
             flex: 1;
-            padding: 24px;
+            padding: 30px;
             overflow-y: auto;
         }
 
         .tables-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
 
         .table-card {
-            background: #f8faff;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: left;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-height: 120px;
+            height: 240px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
 
         .table-card:hover {
+            border-color: #4a90e2;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
         }
 
-        .table-card.empty {
-            border-color: #cbd5e0;
-            background: #f7fafc;
+        .table-card.active {
+            border-color: #4a90e2;
+            background: #2a2a2a;
         }
 
         .table-card.occupied {
-            border-color: #f59e0b;
-            background: #fef3c7;
+            background: #CFDDDB;
+            border-color: #CFDDDB;
         }
 
-        .table-card.ordering {
-            border-color: #3b82f6;
-            background: #dbeafe;
+        .table-card.occupied .room-name {
+            color: #2D2D2D;
         }
 
-        .table-card.ordered {
-            border-color: #10b981;
-            background: #d1fae5;
+        .table-card.occupied .table-number {
+            color: #2D2D2D;
         }
 
-        .table-card.served {
-            border-color: #8b5cf6;
-            background: #ede9fe;
+        .table-card.occupied .table-time {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .table-guests {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .order-name {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .order-quantity {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .order-extra {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .total-orders {
+            color: #2D2D2D;
+        }
+
+        .table-card.occupied .total-amount {
+            color: #2D2D2D;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .table-card.occupied .table-summary {
+            border-top-color: #2D2D2D;
+        }
+
+        .table-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+
+        .table-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .room-name {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 6px;
         }
 
         .table-number {
             font-size: 20px;
             font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .table-time {
+            font-size: 12px;
+            color: #888;
             margin-bottom: 8px;
-            color: #1e293b;
         }
 
-        .table-status {
-            font-size: 13px;
-            color: #64748b;
+        .table-guests {
+            font-size: 14px;
+            color: #cccccc;
+            margin-bottom: 12px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 4px;
-            font-weight: 500;
+            padding: 1px 0;
         }
 
-        .table-amount {
+        .order-name {
+            font-size: 12px;
+            color: #cccccc;
+            flex: 1;
+        }
+
+        .order-quantity {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        .order-extra {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 1px;
+            margin-bottom: 2px;
+        }
+
+        .table-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 6px;
+            border-top: 1px solid #444;
+        }
+
+        .total-orders {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .total-amount {
             font-size: 16px;
             font-weight: 700;
-            color: #667eea;
-            margin-top: 6px;
+            color: #4a90e2;
         }
 
-        .panel-header {
+        .side-panel {
+            background: #000000;
+            display: flex;
+            flex-direction: column;
             padding: 20px;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8faff;
+        }
+
+        .inspector-container {
+            background: #292C2D;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            color: #1e293b;
+            color: #ffffff;
+            margin-bottom: 20px;
         }
 
         .activity-log {
-            padding: 16px;
+            flex: 1;
             overflow-y: auto;
-            max-height: 300px;
         }
 
         .log-entry {
             display: flex;
             align-items: flex-start;
-            padding: 12px 16px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #A8A8A8;
             border-radius: 8px;
-            font-size: 14px;
-            border-left: 4px solid #e2e8f0;
-            background: #f8faff;
-        }
-
-        .log-entry.order {
-            background: #dbeafe;
-            border-left-color: #3b82f6;
-        }
-
-        .log-entry.complete {
-            background: #d1fae5;
-            border-left-color: #10b981;
-        }
-
-        .log-icon {
-            margin-right: 12px;
-            font-size: 16px;
-        }
-
-        .log-content {
-            flex: 1;
         }
 
         .log-time {
             font-size: 12px;
-            color: #64748b;
-            margin-top: 4px;
+            color: #2D2D2D;
+            min-width: 50px;
+            margin-right: 12px;
+            font-weight: 500;
         }
 
-        .notification {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #667eea;
-            color: white;
-            padding: 16px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            max-width: 300px;
+        .log-message {
+            font-size: 14px;
+            color: #2D2D2D;
+            line-height: 1.4;
+            flex: 1;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .log-table-badge {
+            display: inline-block;
+            background: #666;
+            color: #2D2D2D;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+            font-weight: 500;
         }
 
-        .notification.success {
-            background: #10b981;
+        .log-highlight {
+            color: #4a90e2;
+            font-weight: 600;
         }
 
-        .notification.error {
-            background: #ef4444;
+        .log-success {
+            color: #4ade80;
         }
 
-        @media (max-width: 1024px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-            }
+        .log-entry.success {
+            border-left-color: #4ade80;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef4444;
+        }
+
+        .log-entry.order {
+            border-left-color: #f59e0b;
+        }
+
+        .log-entry.qr {
+            border-left-color: #8b5cf6;
+        }
+
+        .log-entry.payment {
+            border-left-color: #10b981;
+        }
+
+        .log-entry.system {
+            border-left-color: #6b7280;
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
-        <div class="main-section">
-            <div class="header">
-                <div>
-                    <h1>🍽️ Burnana Dashboard</h1>
-                    <p style="opacity: 0.9; margin-top: 4px;">실시간 매장 관리 시스템</p>
-                </div>
-                <div class="status-badge" id="statusBadge">🟢 운영 중</div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number" id="totalTables">8</div>
-                    <div class="stat-label">전체 테이블</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="occupiedTables">0</div>
-                    <div class="stat-label">사용 중</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="todayOrders">0</div>
-                    <div class="stat-label">오늘 주문</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="todaySales">0원</div>
-                    <div class="stat-label">오늘 매출</div>
-                </div>
-            </div>
-
-            <div class="tables-container">
-                <div class="tables-grid" id="tablesGrid">
-                    <!-- 테이블들이 동적으로 생성됩니다 -->
-                </div>
-            </div>
+        <!-- 메인 헤더 -->
+        <div class="main-header">
+            <div class="restaurant-name">웅갈비</div>
+            <div class="dashboard-title">Dashboard</div>
+            <div class="datetime" id="datetime"></div>
         </div>
 
-        <div class="side-panel">
-            <div class="panel-card">
-                <div class="panel-header">
-                    <div class="panel-title">📊 실시간 활동</div>
-                </div>
-                <div class="activity-log" id="activityLog">
-                    <div class="log-entry">
-                        <div class="log-icon">🚀</div>
-                        <div class="log-content">
-                            <div>시스템이 시작되었습니다</div>
-                            <div class="log-time" id="systemStartTime"></div>
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 메인 섹션 -->
+            <div class="main-section">
+                <!-- 네비게이션 바 -->
+                <div class="nav-bar">
+                    <div class="room-tabs-container">
+                        <div class="room-tabs" id="roomTabs">
+                            <button class="room-tab active">1st floor</button>
+                            <button class="room-tab">2nd floor</button>
+                            <button class="room-tab">3rd floor</button>
+                            <button class="room-tab">VIP floor</button>
+                            <button class="room-tab">Outdoor</button>
+                            <button class="room-tab">Bar floor</button>
+                            <button class="room-tab">Private floor</button>
+                            <button class="room-tab">Meeting floor</button>
+                            <button class="room-tab">Event floor</button>
+                            <button class="room-tab">Rooftop</button>
                         </div>
+                    </div>
+                    <div class="nav-controls">
+                        <button class="nav-arrow" id="navLeft">‹</button>
+                        <button class="nav-arrow" id="navRight">›</button>
+                        <button class="settings-btn">⚙</button>
+                    </div>
+                </div>
+
+                <!-- 테이블 컨테이너 -->
+                <div class="tables-container">
+                    <div class="tables-grid" id="tablesGrid">
+                        <!-- 테이블 카드들이 여기에 동적으로 생성됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 사이드 패널 -->
+            <div class="side-panel">
+                <div class="inspector-container">
+                    <div class="panel-title">진행상황</div>
+                    <div class="activity-log" id="activityLog">
+                        <!-- 로그 항목들이 여기에 동적으로 생성됩니다 -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="notification" id="notification"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        // 전역 변수
-        let selectedTableId = null;
-        let tablesData = {};
-        let socket = null;
-        let todayStats = { orders: 0, sales: 0 };
+        // Socket.IO 연결
+        const socket = io();
 
-        // 페이지 초기화
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Socket.IO 연결
-            try {
-                socket = io();
-                setupSocketListeners();
-            } catch (error) {
-                console.error('Socket.IO 연결 실패:', error);
-            }
-
-            // 시작 시간 표시
-            document.getElementById('systemStartTime').textContent = 
-                new Date().toLocaleTimeString();
-
-            // 초기 테이블 상태 로드
-            await initializeTables();
-            renderTables();
-            updateStats();
-        });
-
-        // Socket.IO 이벤트 리스너 설정
-        function setupSocketListeners() {
-            socket.on('connect', () => {
-                console.log('서버에 연결되었습니다');
-                updateStatusBadge('connected');
-            });
-
-            socket.on('disconnect', () => {
-                console.log('서버 연결이 끊어졌습니다');
-                updateStatusBadge('disconnected');
-            });
-
-            socket.on('tableStateChanged', (data) => {
-                const { tableId, state } = data;
-                tablesData[tableId] = state;
-                
-                renderTables();
-                updateStats();
-
-                // 새 주문 알림
-                if (state.status === 'ordered') {
-                    showNotification('새로운 주문이 들어왔습니다!', 'success');
-                    addActivityLog('order', `테이블 ${tableId} 주문 완료`, '🍽️');
-                    
-                    // 주문 통계 업데이트
-                    todayStats.orders++;
-                    todayStats.sales += state.totalAmount || 0;
-                }
-            });
-
-            socket.on('newMessage', (data) => {
-                addActivityLog('system', `테이블 ${data.tableId} AI 상담`, '💬');
-            });
-
-            // QR 스캔 이벤트 수신 (새로 추가!)
-            socket.on('qrScanAttempt', (data) => {
-                if (data.success) {
-                    addActivityLog('qr-success', data.message, '📱');
-                    showNotification(`테이블 ${data.tableId} 고객이 QR을 스캔했습니다!`, 'success');
-                } else {
-                    addActivityLog('qr-failed', data.message, '⚠️');
-                    showNotification(`테이블 ${data.tableId} QR 스캔 실패`, 'error');
-                }
-            });
-
-            // QR 생성 이벤트 수신 (새로 추가!)
-            socket.on('qrGenerated', (data) => {
-                addActivityLog('qr-generated', data.message, '🔗');
-            });
+        // 현재 시간 업데이트
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                month: 'long', 
+                day: 'numeric', 
+                weekday: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('ko-KR', options);
+            document.getElementById('datetime').textContent = dateStr;
         }
 
-        // 상태 뱃지 업데이트
-        function updateStatusBadge(status) {
-            const badge = document.getElementById('statusBadge');
-            if (status === 'connected') {
-                badge.innerHTML = '🟢 운영 중';
-                badge.style.background = 'rgba(16, 185, 129, 0.3)';
-            } else {
-                badge.innerHTML = '🔴 연결 끊김';
-                badge.style.background = 'rgba(239, 68, 68, 0.3)';
-            }
-        }
-
-        // 테이블 초기화
-        async function initializeTables() {
-            // MVP용 8개 테이블 하드코딩
-            for (let i = 1; i <= 8; i++) {
-                tablesData[i] = {
-                    id: i,
-                    status: 'empty',
-                    customers: 0,
-                    orders: [],
-                    totalAmount: 0,
-                    sessionStart: null
-                };
-            }
-        }
-
-        // 테이블 렌더링
-        function renderTables() {
+        // 테이블 데이터 생성
+        function createTables() {
             const tablesGrid = document.getElementById('tablesGrid');
             tablesGrid.innerHTML = '';
 
-            Object.values(tablesData).forEach(table => {
+            // 8개의 테이블 생성 (2x4 그리드)
+            for (let i = 1; i <= 8; i++) {
                 const tableCard = document.createElement('div');
-                tableCard.className = `table-card ${table.status}`;
-                
-                tableCard.innerHTML = `
-                    <div class="table-number">테이블 ${table.id}</div>
-                    <div class="table-status">${getStatusText(table.status)}</div>
-                    ${table.totalAmount > 0 ? `<div class="table-amount">${table.totalAmount.toLocaleString()}원</div>` : ''}
-                `;
+                tableCard.className = 'table-card';
+                tableCard.id = `table-${i}`;
 
-                tableCard.addEventListener('click', () => selectTable(table.id));
+                if (i === 1) {
+                    // Table 1은 활성 상태로 설정 (6개 음식 예시)
+                    tableCard.classList.add('active', 'occupied');
+                    tableCard.innerHTML = createTableCardHTML(i, 'Room 1', '00:05', 4, [
+                        { name: '토마토 파스타', quantity: 1 },
+                        { name: '샐러드', quantity: 1 },
+                        { name: '까르보나라', quantity: 1 },
+                        { name: '물냉면', quantity: 1 },
+                        { name: '비빔냉면', quantity: 1 },
+                        { name: '제육볶음', quantity: 1 }
+                    ], 60000);
+                } else if (i === 2) {
+                    // Table 2는 4개 음식 예시
+                    tableCard.classList.add('occupied');
+                    tableCard.innerHTML = createTableCardHTML(i, 'Room 1', '00:12', 5, [
+                        { name: '비빔냉면', quantity: 2 },
+                        { name: '제육볶음', quantity: 1 },
+                        { name: '김치찌개', quantity: 1 },
+                        { name: '된장찌개', quantity: 1 }
+                    ], 45000);
+                } else {
+                    // 빈 테이블
+                    tableCard.innerHTML = createTableCardHTML(i, 'Room 1', '--:--', 0, [], 0);
+                }
+
                 tablesGrid.appendChild(tableCard);
-            });
-        }
-
-        // 테이블 선택
-        function selectTable(tableId) {
-            selectedTableId = tableId;
-            console.log('테이블 선택:', tableId);
-            // 추가 기능은 나중에 구현
-        }
-
-        // 상태 텍스트 반환
-        function getStatusText(status) {
-            const statusMap = {
-                'empty': '빈 테이블',
-                'occupied': '사용 중',
-                'ordering': '주문 중',
-                'ordered': '주문 완료',
-                'served': '서빙 완료'
-            };
-            return statusMap[status] || status;
-        }
-
-        // 활동 로그 추가
-        function addActivityLog(type, message, icon = '📍') {
-            const logDiv = document.getElementById('activityLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.innerHTML = `
-                <div class="log-icon">${icon}</div>
-                <div class="log-content">
-                    <div>${message}</div>
-                    <div class="log-time">${new Date().toLocaleTimeString()}</div>
-                </div>
-            `;
-            
-            // 최신 로그를 상단에 추가
-            if (logDiv.firstChild) {
-                logDiv.insertBefore(entry, logDiv.firstChild);
-            } else {
-                logDiv.appendChild(entry);
             }
         }
 
-        // 통계 업데이트
-        function updateStats() {
-            const occupiedCount = Object.values(tablesData)
-                .filter(table => table.status !== 'empty').length;
+        // 테이블 카드 HTML 생성 함수
+        function createTableCardHTML(tableNumber, roomName, time, guests, orders, totalAmount) {
+            const totalOrders = orders.length;
+            const displayOrders = orders.slice(0, 4); // 최대 4개만 표시
+            const extraCount = totalOrders > 4 ? totalOrders - 4 : 0;
             
-            document.getElementById('occupiedTables').textContent = occupiedCount;
-            document.getElementById('todayOrders').textContent = todayStats.orders;
-            document.getElementById('todaySales').textContent = 
-                todayStats.sales.toLocaleString() + '원';
+            let ordersHTML = '';
+            displayOrders.forEach(order => {
+                ordersHTML += `
+                    <div class="order-item">
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-quantity">${order.quantity}</div>
+                    </div>
+                `;
+            });
+            
+            if (extraCount > 0) {
+                ordersHTML += `<div class="order-extra">외 ${extraCount}개</div>`;
+            }
+
+            // 손님이 있는 경우와 없는 경우 구분
+            if (guests > 0 && totalOrders > 0) {
+                return `
+                    <div class="table-content">
+                        <div class="table-left">
+                            <div class="room-name">${roomName}</div>
+                            <div class="table-number">Table ${tableNumber}</div>
+                            ${ordersHTML}
+                        </div>
+                        <div class="table-right">
+                            <div class="table-time">${time}</div>
+                            <div class="table-guests">${guests} Person</div>
+                        </div>
+                    </div>
+                    <div class="table-summary">
+                        <div class="total-orders">총 주문수량: ${totalOrders}개</div>
+                        <div class="total-amount">${totalAmount.toLocaleString()}원</div>
+                    </div>
+                `;
+            } else {
+                // 빈 테이블
+                return `
+                    <div class="table-content">
+                        <div class="table-left">
+                            <div class="room-name">${roomName}</div>
+                            <div class="table-number">Table ${tableNumber}</div>
+                        </div>
+                        <div class="table-right">
+                        </div>
+                    </div>
+                    <div class="table-summary">
+                    </div>
+                `;
+            }
         }
 
-        // 알림 표시
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
+        // 실제 로그 시스템
+        let activityLogs = [];
+
+        // 로그 추가 함수
+        function addLog(message, type = 'info') {
+            const now = new Date();
+            const time = now.toLocaleTimeString('ko-KR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
             
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+            const log = {
+                time: time,
+                message: message,
+                type: type,
+                timestamp: now
+            };
+            
+            activityLogs.unshift(log); // 최신 로그를 맨 위에 추가
+            
+            // 최대 50개 로그만 유지
+            if (activityLogs.length > 50) {
+                activityLogs = activityLogs.slice(0, 50);
+            }
+            
+            renderLogs();
         }
 
-        // 페이지 로드 완료 후 웰컴 메시지
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                addActivityLog('system', 'Burnana 대시보드가 준비되었습니다', '🎉');
-                showNotification('대시보드에 오신 것을 환영합니다!', 'success');
-            }, 1000);
+        // 로그 렌더링 함수
+        function renderLogs() {
+            const activityLog = document.getElementById('activityLog');
+            activityLog.innerHTML = '';
+
+            activityLogs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${log.type}`;
+                
+                // 테이블 번호가 포함된 메시지인지 확인
+                const tableMatch = log.message.match(/테이블 (\d+)/);
+                const tableBadge = tableMatch ? `<span class="log-table-badge">Table ${tableMatch[1]}</span>` : '';
+                
+                logEntry.innerHTML = `
+                    <div class="log-time">${log.time}</div>
+                    <div class="log-message">${tableBadge}${log.message}</div>
+                `;
+                activityLog.appendChild(logEntry);
+            });
+        }
+
+        // 초기 로그 생성
+        function createInitialLogs() {
+            addLog('대시보드가 시작되었습니다.', 'system');
+            addLog('웹소켓 연결을 시도합니다...', 'system');
+        }
+
+        // 네비게이션 스크롤 기능
+        let currentScrollPosition = 0;
+        const scrollStep = 200;
+
+        function updateNavigationArrows() {
+            const roomTabs = document.getElementById('roomTabs');
+            const container = document.querySelector('.room-tabs-container');
+            const navLeft = document.getElementById('navLeft');
+            const navRight = document.getElementById('navRight');
+
+            const containerWidth = container.offsetWidth;
+            const tabsWidth = roomTabs.scrollWidth;
+            const maxScroll = tabsWidth - containerWidth;
+
+            // 왼쪽 화살표 표시/숨김
+            if (currentScrollPosition > 0) {
+                navLeft.classList.add('visible');
+            } else {
+                navLeft.classList.remove('visible');
+            }
+
+            // 오른쪽 화살표 표시/숨김
+            if (currentScrollPosition < maxScroll) {
+                navRight.classList.add('visible');
+            } else {
+                navRight.classList.remove('visible');
+            }
+        }
+
+        function scrollLeft() {
+            const roomTabs = document.getElementById('roomTabs');
+            currentScrollPosition = Math.max(0, currentScrollPosition - scrollStep);
+            roomTabs.style.transform = `translateX(-${currentScrollPosition}px)`;
+            updateNavigationArrows();
+        }
+
+        function scrollRight() {
+            const roomTabs = document.getElementById('roomTabs');
+            const container = document.querySelector('.room-tabs-container');
+            const tabsWidth = roomTabs.scrollWidth;
+            const containerWidth = container.offsetWidth;
+            const maxScroll = tabsWidth - containerWidth;
+
+            currentScrollPosition = Math.min(maxScroll, currentScrollPosition + scrollStep);
+            roomTabs.style.transform = `translateX(-${currentScrollPosition}px)`;
+            updateNavigationArrows();
+        }
+
+        // 공간 탭 클릭 이벤트
+        function setupRoomTabs() {
+            const roomTabs = document.querySelectorAll('.room-tab');
+            roomTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 모든 탭에서 active 클래스 제거
+                    roomTabs.forEach(t => t.classList.remove('active'));
+                    // 클릭된 탭에 active 클래스 추가
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            createTables();
+            createInitialLogs();
+            
+            // 공간 탭 이벤트 설정
+            setupRoomTabs();
+            
+            // 네비게이션 화살표 이벤트 리스너
+            document.getElementById('navLeft').addEventListener('click', scrollLeft);
+            document.getElementById('navRight').addEventListener('click', scrollRight);
+            
+            // 초기 화살표 상태 업데이트
+            updateNavigationArrows();
+            
+            // 윈도우 리사이즈 시 화살표 상태 업데이트
+            window.addEventListener('resize', updateNavigationArrows);
+            
+            // 1분마다 시간 업데이트
+            setInterval(updateDateTime, 60000);
         });
+
+        // Socket.IO 이벤트 리스너
+        socket.on('connect', function() {
+            console.log('대시보드 연결됨');
+            addLog('웹소켓 연결이 성공했습니다.', 'success');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('대시보드 연결 끊김');
+            addLog('웹소켓 연결이 끊어졌습니다.', 'error');
+        });
+
+        socket.on('table_update', function(data) {
+            console.log('테이블 업데이트:', data);
+            addLog(`테이블 ${data.tableId} 상태가 업데이트되었습니다.`, 'info');
+        });
+
+        socket.on('new_order', function(data) {
+            console.log('새 주문:', data);
+            addLog(`테이블 ${data.tableId}에서 새로운 주문이 들어왔습니다.`, 'order');
+        });
+
+        socket.on('qr_scan', function(data) {
+            console.log('QR 스캔:', data);
+            addLog(`테이블 ${data.tableId}에서 QR 코드가 스캔되었습니다.`, 'qr');
+        });
+
+        socket.on('payment_complete', function(data) {
+            console.log('결제 완료:', data);
+            addLog(`테이블 ${data.tableId}에서 결제가 완료되었습니다. (${data.amount}원)`, 'payment');
+        });
+
+        // 테스트용 로그 (실제 운영시 제거)
+        setTimeout(() => {
+            addLog('손님이 QR을 스캔했습니다', 'qr');
+        }, 2000);
+        
+        setTimeout(() => {
+            addLog('손님이 토마토 파스타를 장바구니에 담았습니다.', 'order');
+        }, 4000);
+        
+        setTimeout(() => {
+            addLog('손님이 결제를 완료했습니다.', 'payment');
+        }, 6000);
     </script>
 </body>
 </html>
