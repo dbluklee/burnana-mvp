@@ -1,0 +1,30 @@
+{
+  "name": "burnana-mvp",
+  "version": "1.0.0",
+  "description": "Burnana - AI 기반 스마트 테이블 오더 서비스 MVP",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "axios": "^1.5.0",
+    "qrcode": "^1.5.3",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "burnana",
+    "restaurant",
+    "table-order",
+    "ai-chatbot",
+    "mvp"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

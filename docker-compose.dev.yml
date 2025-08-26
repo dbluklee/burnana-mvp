@@ -1,0 +1,30 @@
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  burnana-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - OLLAMA_HOST=112.148.37.41:1884
+      - BASE_URL=http://localhost:3000
+    networks:
+      - burnana-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - burnana-network
+
+networks:
+  burnana-network:
+    driver: bridge

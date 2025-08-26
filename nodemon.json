@@ -1,0 +1,6 @@
+{
+  "watch": ["server/"],
+  "ext": "js,json",
+  "ignore": ["logs/", "tests/"],
+  "exec": "node server/app.js"
+}

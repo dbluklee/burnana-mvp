@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burnana 대시보드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            height: 100vh;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .main-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            background: #f8faff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stat-item {
+            padding: 20px;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .tables-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .table-card {
+            background: #f8faff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .table-card.empty {
+            border-color: #cbd5e0;
+            background: #f7fafc;
+        }
+
+        .table-card.occupied {
+            border-color: #f59e0b;
+            background: #fef3c7;
+        }
+
+        .table-card.ordering {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+
+        .table-card.ordered {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .table-card.served {
+            border-color: #8b5cf6;
+            background: #ede9fe;
+        }
+
+        .table-number {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .table-status {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .table-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 6px;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8faff;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .activity-log {
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid #e2e8f0;
+            background: #f8faff;
+        }
+
+        .log-entry.order {
+            background: #dbeafe;
+            border-left-color: #3b82f6;
+        }
+
+        .log-entry.complete {
+            background: #d1fae5;
+            border-left-color: #10b981;
+        }
+
+        .log-icon {
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-time {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #667eea;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="main-section">
+            <div class="header">
+                <div>
+                    <h1>🍽️ Burnana Dashboard</h1>
+                    <p style="opacity: 0.9; margin-top: 4px;">실시간 매장 관리 시스템</p>
+                </div>
+                <div class="status-badge" id="statusBadge">🟢 운영 중</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTables">8</div>
+                    <div class="stat-label">전체 테이블</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="occupiedTables">0</div>
+                    <div class="stat-label">사용 중</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todayOrders">0</div>
+                    <div class="stat-label">오늘 주문</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todaySales">0원</div>
+                    <div class="stat-label">오늘 매출</div>
+                </div>
+            </div>
+
+            <div class="tables-container">
+                <div class="tables-grid" id="tablesGrid">
+                    <!-- 테이블들이 동적으로 생성됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">📊 실시간 활동</div>
+                </div>
+                <div class="activity-log" id="activityLog">
+                    <div class="log-entry">
+                        <div class="log-icon">🚀</div>
+                        <div class="log-content">
+                            <div>시스템이 시작되었습니다</div>
+                            <div class="log-time" id="systemStartTime"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        // 전역 변수
+        let selectedTableId = null;
+        let tablesData = {};
+        let socket = null;
+        let todayStats = { orders: 0, sales: 0 };
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Socket.IO 연결
+            try {
+                socket = io();
+                setupSocketListeners();
+            } catch (error) {
+                console.error('Socket.IO 연결 실패:', error);
+            }
+
+            // 시작 시간 표시
+            document.getElementById('systemStartTime').textContent = 
+                new Date().toLocaleTimeString();
+
+            // 초기 테이블 상태 로드
+            await initializeTables();
+            renderTables();
+            updateStats();
+        });
+
+        // Socket.IO 이벤트 리스너 설정
+        function setupSocketListeners() {
+            socket.on('connect', () => {
+                console.log('서버에 연결되었습니다');
+                updateStatusBadge('connected');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('서버 연결이 끊어졌습니다');
+                updateStatusBadge('disconnected');
+            });
+
+            socket.on('tableStateChanged', (data) => {
+                const { tableId, state } = data;
+                tablesData[tableId] = state;
+                
+                renderTables();
+                updateStats();
+
+                // 새 주문 알림
+                if (state.status === 'ordered') {
+                    showNotification('새로운 주문이 들어왔습니다!', 'success');
+                    addActivityLog('order', `테이블 ${tableId} 주문 완료`, '🍽️');
+                    
+                    // 주문 통계 업데이트
+                    todayStats.orders++;
+                    todayStats.sales += state.totalAmount || 0;
+                }
+            });
+
+            socket.on('newMessage', (data) => {
+                addActivityLog('system', `테이블 ${data.tableId} AI 상담`, '💬');
+            });
+
+            // QR 스캔 이벤트 수신 (새로 추가!)
+            socket.on('qrScanAttempt', (data) => {
+                if (data.success) {
+                    addActivityLog('qr-success', data.message, '📱');
+                    showNotification(`테이블 ${data.tableId} 고객이 QR을 스캔했습니다!`, 'success');
+                } else {
+                    addActivityLog('qr-failed', data.message, '⚠️');
+                    showNotification(`테이블 ${data.tableId} QR 스캔 실패`, 'error');
+                }
+            });
+
+            // QR 생성 이벤트 수신 (새로 추가!)
+            socket.on('qrGenerated', (data) => {
+                addActivityLog('qr-generated', data.message, '🔗');
+            });
+        }
+
+        // 상태 뱃지 업데이트
+        function updateStatusBadge(status) {
+            const badge = document.getElementById('statusBadge');
+            if (status === 'connected') {
+                badge.innerHTML = '🟢 운영 중';
+                badge.style.background = 'rgba(16, 185, 129, 0.3)';
+            } else {
+                badge.innerHTML = '🔴 연결 끊김';
+                badge.style.background = 'rgba(239, 68, 68, 0.3)';
+            }
+        }
+
+        // 테이블 초기화
+        async function initializeTables() {
+            // MVP용 8개 테이블 하드코딩
+            for (let i = 1; i <= 8; i++) {
+                tablesData[i] = {
+                    id: i,
+                    status: 'empty',
+                    customers: 0,
+                    orders: [],
+                    totalAmount: 0,
+                    sessionStart: null
+                };
+            }
+        }
+
+        // 테이블 렌더링
+        function renderTables() {
+            const tablesGrid = document.getElementById('tablesGrid');
+            tablesGrid.innerHTML = '';
+
+            Object.values(tablesData).forEach(table => {
+                const tableCard = document.createElement('div');
+                tableCard.className = `table-card ${table.status}`;
+                
+                tableCard.innerHTML = `
+                    <div class="table-number">테이블 ${table.id}</div>
+                    <div class="table-status">${getStatusText(table.status)}</div>
+                    ${table.totalAmount > 0 ? `<div class="table-amount">${table.totalAmount.toLocaleString()}원</div>` : ''}
+                `;
+
+                tableCard.addEventListener('click', () => selectTable(table.id));
+                tablesGrid.appendChild(tableCard);
+            });
+        }
+
+        // 테이블 선택
+        function selectTable(tableId) {
+            selectedTableId = tableId;
+            console.log('테이블 선택:', tableId);
+            // 추가 기능은 나중에 구현
+        }
+
+        // 상태 텍스트 반환
+        function getStatusText(status) {
+            const statusMap = {
+                'empty': '빈 테이블',
+                'occupied': '사용 중',
+                'ordering': '주문 중',
+                'ordered': '주문 완료',
+                'served': '서빙 완료'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 활동 로그 추가
+        function addActivityLog(type, message, icon = '📍') {
+            const logDiv = document.getElementById('activityLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `
+                <div class="log-icon">${icon}</div>
+                <div class="log-content">
+                    <div>${message}</div>
+                    <div class="log-time">${new Date().toLocaleTimeString()}</div>
+                </div>
+            `;
+            
+            // 최신 로그를 상단에 추가
+            if (logDiv.firstChild) {
+                logDiv.insertBefore(entry, logDiv.firstChild);
+            } else {
+                logDiv.appendChild(entry);
+            }
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const occupiedCount = Object.values(tablesData)
+                .filter(table => table.status !== 'empty').length;
+            
+            document.getElementById('occupiedTables').textContent = occupiedCount;
+            document.getElementById('todayOrders').textContent = todayStats.orders;
+            document.getElementById('todaySales').textContent = 
+                todayStats.sales.toLocaleString() + '원';
+        }
+
+        // 알림 표시
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // 페이지 로드 완료 후 웰컴 메시지
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addActivityLog('system', 'Burnana 대시보드가 준비되었습니다', '🎉');
+                showNotification('대시보드에 오신 것을 환영합니다!', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
