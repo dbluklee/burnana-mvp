@@ -94,9 +94,7 @@ class NaverMenuScraper:
                 
                 html = await response.text()
                 
-                # 디버깅: HTML 내용 일부 출력
-                logger.info(f"🔍 HTML 길이: {len(html)} 문자")
-                logger.info(f"🔍 HTML 일부: {html[:500]}...")
+
                 
             # 메뉴 정보 파싱
             menus = self.parse_menu_from_html(html, naver_store_id)
@@ -125,8 +123,8 @@ class NaverMenuScraper:
         
         try:
             # 모바일 네이버 플레이스 메뉴 패턴 파싱
-            # 메뉴 항목들이 리스트 형태로 표시됨
-            menu_items = soup.find_all(['li', 'div'], class_=re.compile(r'menu|item|list'))
+            # CSS 선택자: li.E2jtL (메뉴 항목)
+            menu_items = soup.find_all('li', class_='E2jtL')
             
             if not menu_items:
                 # 다른 패턴 시도
@@ -160,33 +158,60 @@ class NaverMenuScraper:
     def extract_menu_item_mobile(self, item_element) -> Optional[MenuItem]:
         """모바일 네이버 플레이스 메뉴 아이템 요소에서 정보 추출"""
         try:
-            # 전체 텍스트 가져오기
-            full_text = item_element.get_text(strip=True)
+            menu_name, menu_desc, menu_price, menu_recommendation = "", "", "", ""
+
+            # --- 메뉴 이름(span.lPzHi) 수집 ---
+            name_elements = item_element.find_all('span', class_='lPzHi')
+            if name_elements:
+                menu_name = name_elements[0].get_text(strip=True)
+
+            # --- 메뉴 설명(div.kPogF) 수집 ---
+            desc_elements = item_element.find_all('div', class_='kPogF')
+            if desc_elements:
+                menu_desc = desc_elements[0].get_text(strip=True)
+
+            # --- 추천 여부(span.QM_zp span) 수집 ---
+            recommendation_elements = item_element.find_all('span', class_='QM_zp')
+            if recommendation_elements:
+                span_elements = recommendation_elements[0].find_all('span')
+                if span_elements:
+                    menu_recommendation = span_elements[0].get_text(strip=True)
+
+            # --- 메뉴 가격(div.GXS1X) 수집 ---
+            # ⭐ em 태그가 있는 경우와 없는 경우 모두 처리
+            price_em_elements = item_element.find_all('div', class_='GXS1X')
+            if price_em_elements:
+                em_elements = price_em_elements[0].find_all('em')
+                if em_elements:
+                    # em 태그가 있으면 그 안의 텍스트를 가격으로
+                    menu_price = em_elements[0].get_text(strip=True)
+                else:
+                    # em 태그가 없으면 div.GXS1X의 텍스트를 가격으로
+                    menu_price = price_em_elements[0].get_text(strip=True)
             
-            # 모바일 네이버 플레이스 메뉴 패턴: "메뉴명_가격_원설명"
-            # 예: "대표물냉면_12,000_원물냉면"
-            menu_pattern = r'^([^_]+)_(\d{1,3}(?:,\d{3})*)_원(.+)$'
-            match = re.match(menu_pattern, full_text)
+            # 가격에서 숫자만 추출
+            if menu_price:
+                price_match = re.search(r'(\d{1,3}(?:,\d{3})*)', menu_price)
+                if price_match:
+                    menu_price = int(price_match.group(1).replace(',', ''))
+                else:
+                    menu_price = None
             
-            if match:
-                name = match.group(1)
-                price = int(match.group(2).replace(',', ''))
-                description = match.group(3)
-                
+            # 수집한 정보가 하나라도 있을 경우에만 메뉴 생성
+            if menu_name or menu_desc or menu_price or menu_recommendation:
                 return MenuItem(
-                    name=name,
-                    price=price,
-                    description=description,
+                    name=menu_name,
+                    price=menu_price,
+                    description=menu_desc,
                     category=None,
                     image_url=None,
                     rating=None,
                     review_count=0,
-                    is_popular=False,
+                    is_popular=bool(menu_recommendation),
                     is_signature=False
                 )
             
-            # 다른 패턴 시도
-            return self.extract_menu_item(item_element)
+            return None
             
         except Exception as e:
             logger.error(f"❌ 모바일 메뉴 아이템 추출 오류: {e}")

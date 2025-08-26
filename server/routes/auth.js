@@ -104,6 +104,40 @@ router.post('/signup', async (req, res) => {
         .catch(error => {
           console.error(`❌ [매장 ${newStore.id}] 파이썬 후처리 예외:`, error);
         });
+      
+      // 6단계: 자동 메뉴 스크래핑 실행 (백그라운드)
+      if (naverStoreId) {
+        console.log(`🍽️ [매장 ${newStore.id}] 자동 메뉴 스크래핑 시작`);
+        
+        // 5초 후 메뉴 스크래핑 실행 (후처리 완료 대기)
+        setTimeout(async () => {
+          try {
+            const pythonHost = process.env.PYTHON_SERVICE_HOST || 'localhost';
+            const pythonPort = process.env.PYTHON_SERVICE_PORT || '8000';
+            const pythonUrl = `http://${pythonHost}:${pythonPort}`;
+            
+            const response = await fetch(`${pythonUrl}/scrape-menu`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                store_id: newStore.id,
+                naver_store_id: naverStoreId
+              })
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log(`🍽️ [매장 ${newStore.id}] 자동 메뉴 스크래핑 요청 완료:`, result.task_id);
+            } else {
+              console.error(`❌ [매장 ${newStore.id}] 자동 메뉴 스크래핑 요청 실패:`, response.status);
+            }
+          } catch (error) {
+            console.error(`❌ [매장 ${newStore.id}] 자동 메뉴 스크래핑 예외:`, error.message);
+          }
+        }, 5000);
+      }
     }
 
     // 6단계: 성공 응답
@@ -131,7 +165,7 @@ router.post('/signup', async (req, res) => {
     if (naverStoreUrl) {
       responseData.postProcessing = {
         initiated: true,
-        message: '네이버 링크 기반 후처리가 시작되었습니다.'
+        message: '네이버 링크 기반 후처리 및 메뉴 스크래핑이 시작되었습니다.'
       };
     }
 

@@ -6,4 +6,4 @@ flask-cors>=4.0.0
 aiohttp>=3.8.0
 psycopg2-binary>=2.9.0
 pandas>=1.5.0
-asyncio
+brotli>=1.1.0
