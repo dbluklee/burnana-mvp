@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>웅갈비 대시보드</title>
     <style>
         * {
@@ -26,82 +26,93 @@
         .main-header {
             background: #000000;
             color: white;
-            padding: 20px 60px;
+            padding: 1.25rem 3.75rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
+            height: 5rem;
+            min-height: 5rem;
+            max-height: 5rem;
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 25vw;
             flex: 1;
             gap: 0;
+            height: calc(100vh - 5rem);
+            overflow: hidden;
         }
 
         .main-section {
             background: #000000;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .side-panel {
             background: #000000;
             display: flex;
             flex-direction: column;
+            padding: 0.5rem;
         }
 
 
 
         .restaurant-name {
-            font-size: 20px;
+            font-size: 1.25rem;
             font-weight: 400;
             color: #cccccc;
         }
 
         .dashboard-title {
-            font-size: 28px;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #ffffff;
         }
 
         .datetime {
-            font-size: 20px;
+            font-size: 1.25rem;
             color: #cccccc;
         }
 
         .nav-bar {
             background: #000000;
-            padding: 15px 30px;
+            padding: 0.9375rem 1.875rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-width: 0;
         }
 
         .room-tabs-container {
             position: relative;
             flex: 1;
             overflow: hidden;
+            min-width: 0;
         }
 
         .room-tabs {
             display: flex;
-            gap: 10px;
+            gap: 0.625rem;
             transition: transform 0.3s ease;
+            min-width: 0;
         }
 
         .room-tab {
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
             background: transparent;
             color: #cccccc;
             border: none;
-            border-radius: 6px;
+            border-radius: 0.375rem;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.875rem;
             transition: all 0.3s ease;
             white-space: nowrap;
             flex-shrink: 0;
+            min-width: 0;
         }
 
         .room-tab.active {
@@ -112,18 +123,18 @@
 
         .nav-controls {
             display: flex;
-            gap: 10px;
+            gap: 0.625rem;
             align-items: center;
+            padding-left: 5vw;
         }
 
         .nav-arrow {
-            background: #333;
+            background: transparent;
             border: none;
             color: #cccccc;
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1.5rem;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -138,7 +149,7 @@
             color: #cccccc;
             padding: 0;
             cursor: pointer;
-            font-size: 32px;
+            font-size: 2rem;
             transition: color 0.3s ease;
         }
 
@@ -148,25 +159,25 @@
 
         .tables-container {
             flex: 1;
-            padding: 30px;
+            padding: 1.875rem;
             overflow-y: auto;
         }
 
         .tables-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(12vw, 1fr));
+            gap: 1.25rem;
         }
 
         .table-card {
             background: #333;
             border: 1px solid #444;
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: 0.5rem;
+            padding: 1rem;
             text-align: left;
             cursor: pointer;
             transition: all 0.3s ease;
-            height: 240px;
+            min-height: 15rem;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -174,7 +185,7 @@
 
         .table-card:hover {
             border-color: #4a90e2;
-            transform: translateY(-2px);
+            transform: translateY(-0.125rem);
         }
 
         .table-card.active {
@@ -205,10 +216,12 @@
 
         .table-card.occupied .order-name {
             color: #2D2D2D;
+            font-size: 1.0625rem;
         }
 
         .table-card.occupied .order-quantity {
             color: #2D2D2D;
+            font-size: 1.0625rem;
         }
 
         .table-card.occupied .order-extra {
@@ -221,7 +234,7 @@
 
         .table-card.occupied .total-amount {
             color: #2D2D2D;
-            font-size: 24px;
+            font-size: 1.8125rem;
             font-weight: 800;
         }
 
@@ -232,11 +245,11 @@
         .table-content {
             display: flex;
             flex: 1;
-            gap: 20px;
+            gap: 1.25rem;
         }
 
         .table-left {
-            flex: 1;
+            flex: 2;
             display: flex;
             flex-direction: column;
         }
@@ -249,59 +262,60 @@
         }
 
         .room-name {
-            font-size: 12px;
+            font-size: 0.875rem;
             color: #888;
             font-weight: 500;
-            margin-bottom: 6px;
+            margin-bottom: 0.375rem;
         }
 
         .table-number {
-            font-size: 20px;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 6px;
+            margin-bottom: 0.375rem;
         }
 
         .table-time {
-            font-size: 12px;
+            font-size: 0.875rem;
             color: #888;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
         }
 
         .table-guests {
-            font-size: 14px;
+            font-size: 1.0625rem;
             color: #cccccc;
-            margin-bottom: 12px;
+            margin-bottom: 0.75rem;
         }
 
-        .order-item {
+        .order-names {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-            padding: 1px 0;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .order-quantities {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-end;
         }
 
         .order-name {
-            font-size: 12px;
+            font-size: 1.0625rem;
             color: #cccccc;
-            flex: 1;
+            line-height: 1.2;
         }
 
         .order-quantity {
-            font-size: 12px;
+            font-size: 1.0625rem;
             color: #888;
             font-weight: 500;
-            min-width: 20px;
             text-align: right;
         }
 
-        .order-extra {
-            font-size: 11px;
-            color: #666;
+        .order-name.extra-item {
             font-style: italic;
-            margin-top: 1px;
-            margin-bottom: 2px;
+            color: #666;
         }
 
         .table-summary {
@@ -309,17 +323,17 @@
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
-            padding-top: 6px;
+            padding-top: 0.375rem;
             border-top: 1px solid #444;
         }
 
         .total-orders {
-            font-size: 12px;
+            font-size: 0.875rem;
             color: #888;
         }
 
         .total-amount {
-            font-size: 16px;
+            font-size: 1.1875rem;
             font-weight: 700;
             color: #4a90e2;
         }
@@ -328,62 +342,66 @@
             background: #000000;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 1.25rem;
         }
 
         .inspector-container {
             background: #292C2D;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 0.75rem;
+            padding: 1rem;
             height: 100%;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .panel-title {
-            font-size: 20px;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
         }
 
         .activity-log {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .log-entry {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 12px;
-            padding: 12px;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
             background: #A8A8A8;
-            border-radius: 8px;
+            border-radius: 0.5rem;
         }
 
         .log-time {
-            font-size: 12px;
+            font-size: 0.75rem;
             color: #2D2D2D;
-            min-width: 50px;
-            margin-right: 12px;
+            min-width: 3.125rem;
+            margin-right: 0.75rem;
             font-weight: 500;
         }
 
         .log-message {
-            font-size: 14px;
+            font-size: 0.875rem;
             color: #2D2D2D;
             line-height: 1.4;
             flex: 1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .log-table-badge {
             display: inline-block;
             background: #666;
             color: #2D2D2D;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin-right: 8px;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.6875rem;
+            margin-right: 0.5rem;
             font-weight: 500;
         }
 
@@ -419,6 +437,152 @@
         .log-entry.system {
             border-left-color: #6b7280;
         }
+
+        /* 태블릿 반응형 */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 25vw;
+                height: calc(100vh - 5rem);
+                overflow: visible;
+            }
+
+            .tables-grid {
+                grid-template-columns: repeat(auto-fit, minmax(10vw, 1fr));
+                gap: 0.8rem;
+            }
+
+            .table-card {
+                min-height: 10rem;
+                padding: 0.8rem;
+            }
+
+            .room-name {
+                font-size: 0.9rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .table-number {
+                font-size: 1.4rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .table-time {
+                font-size: 0.9rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .table-guests {
+                font-size: 1rem;
+                margin-bottom: 0.6rem;
+            }
+
+            .order-name {
+                font-size: 1rem;
+            }
+
+            .order-quantity {
+                font-size: 1rem;
+            }
+
+            .total-orders {
+                font-size: 0.8rem;
+            }
+
+            .total-amount {
+                font-size: 1.1rem;
+            }
+
+            .table-card.occupied .total-amount {
+                font-size: 1.8rem;
+            }
+
+            .main-header {
+                padding: 1rem 2rem;
+                height: 5rem;
+                min-height: 5rem;
+                max-height: 5rem;
+            }
+
+            .restaurant-name,
+            .datetime {
+                font-size: 1rem;
+            }
+
+            .dashboard-title {
+                font-size: 1.5rem;
+            }
+
+            .nav-bar {
+                padding: 0.8rem 1.5rem;
+                min-width: 0;
+            }
+
+            .room-tabs-container {
+                min-width: 0;
+                max-width: calc(75vw - 4vw);
+            }
+
+            .room-tabs {
+                gap: 0.5rem;
+                min-width: 0;
+            }
+
+            .room-tab {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+                min-width: 0;
+            }
+
+            .nav-controls {
+                padding-left: 4vw;
+            }
+
+            .nav-arrow {
+                background: transparent;
+                border: none;
+                color: #cccccc;
+                padding: 0.4rem 0.6rem;
+                cursor: pointer;
+                font-size: 1.2rem;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .settings-btn {
+                font-size: 1.8rem;
+            }
+
+            .side-panel {
+                padding: 0.5rem;
+            }
+
+            .inspector-container {
+                height: 100%;
+                padding: 0.8rem;
+                overflow: hidden;
+            }
+
+            .panel-title {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+
+            .log-entry {
+                margin-bottom: 0.6rem;
+                padding: 0.6rem;
+            }
+
+            .log-time {
+                font-size: 0.7rem;
+                min-width: 2.5rem;
+            }
+
+            .log-message {
+                font-size: 0.8rem;
+            }
+        }
+
+
     </style>
 </head>
 <body>
@@ -540,21 +704,60 @@
         // 테이블 카드 HTML 생성 함수
         function createTableCardHTML(tableNumber, roomName, time, guests, orders, totalAmount) {
             const totalOrders = orders.length;
-            const displayOrders = orders.slice(0, 4); // 최대 4개만 표시
-            const extraCount = totalOrders > 4 ? totalOrders - 4 : 0;
             
-            let ordersHTML = '';
+            // 화면 크기에 따라 표시할 음식 개수 결정
+            let maxDisplayOrders = 4;
+            let showExtraInSlot = false;
+            
+            if (window.innerWidth <= 768) {
+                // 작은 카드: 2개까지 표시, 3개 이상이면 1개만 표시하고 2번째 슬롯에 "외 N개"
+                if (totalOrders > 2) {
+                    maxDisplayOrders = 1;
+                    showExtraInSlot = true;
+                } else {
+                    maxDisplayOrders = 2;
+                }
+            } else if (window.innerWidth <= 1024) {
+                // 중간 카드: 3개까지 표시, 4개 이상이면 2개만 표시하고 3번째 슬롯에 "외 N개"
+                if (totalOrders > 3) {
+                    maxDisplayOrders = 2;
+                    showExtraInSlot = true;
+                } else {
+                    maxDisplayOrders = 3;
+                }
+            } else {
+                // 큰 카드: 4개까지 표시, 5개 이상이면 3개만 표시하고 4번째 슬롯에 "외 N개"
+                if (totalOrders > 4) {
+                    maxDisplayOrders = 3;
+                    showExtraInSlot = true;
+                } else {
+                    maxDisplayOrders = 4;
+                }
+            }
+            
+            const displayOrders = orders.slice(0, maxDisplayOrders);
+            const extraCount = totalOrders - maxDisplayOrders;
+            
+            let orderNamesHTML = '';
+            let orderQuantitiesHTML = '';
+            
             displayOrders.forEach(order => {
-                ordersHTML += `
-                    <div class="order-item">
-                        <div class="order-name">${order.name}</div>
-                        <div class="order-quantity">${order.quantity}</div>
-                    </div>
+                orderNamesHTML += `
+                    <div class="order-name">${order.name}</div>
+                `;
+                orderQuantitiesHTML += `
+                    <div class="order-quantity">${order.quantity}</div>
                 `;
             });
             
-            if (extraCount > 0) {
-                ordersHTML += `<div class="order-extra">외 ${extraCount}개</div>`;
+            // "외 N개"를 슬롯에 표시
+            if (showExtraInSlot && extraCount > 0) {
+                orderNamesHTML += `
+                    <div class="order-name extra-item">외 ${extraCount}개</div>
+                `;
+                orderQuantitiesHTML += `
+                    <div class="order-quantity"></div>
+                `;
             }
 
             // 손님이 있는 경우와 없는 경우 구분
@@ -564,11 +767,16 @@
                         <div class="table-left">
                             <div class="room-name">${roomName}</div>
                             <div class="table-number">Table ${tableNumber}</div>
-                            ${ordersHTML}
+                            <div class="order-names">
+                                ${orderNamesHTML}
+                            </div>
                         </div>
                         <div class="table-right">
                             <div class="table-time">${time}</div>
                             <div class="table-guests">${guests} Person</div>
+                            <div class="order-quantities">
+                                ${orderQuantitiesHTML}
+                            </div>
                         </div>
                     </div>
                     <div class="table-summary">
@@ -659,9 +867,11 @@
             const navLeft = document.getElementById('navLeft');
             const navRight = document.getElementById('navRight');
 
+            if (!roomTabs || !container || !navLeft || !navRight) return;
+
             const containerWidth = container.offsetWidth;
             const tabsWidth = roomTabs.scrollWidth;
-            const maxScroll = tabsWidth - containerWidth;
+            const maxScroll = Math.max(0, tabsWidth - containerWidth);
 
             // 왼쪽 화살표 표시/숨김
             if (currentScrollPosition > 0) {
@@ -671,7 +881,7 @@
             }
 
             // 오른쪽 화살표 표시/숨김
-            if (currentScrollPosition < maxScroll) {
+            if (currentScrollPosition < maxScroll && tabsWidth > containerWidth) {
                 navRight.classList.add('visible');
             } else {
                 navRight.classList.remove('visible');
@@ -726,8 +936,14 @@
             // 초기 화살표 상태 업데이트
             updateNavigationArrows();
             
-            // 윈도우 리사이즈 시 화살표 상태 업데이트
-            window.addEventListener('resize', updateNavigationArrows);
+            // 윈도우 리사이즈 시 화살표 상태 업데이트 및 테이블 재렌더링
+            window.addEventListener('resize', function() {
+                updateNavigationArrows();
+                createTables(); // 테이블 재렌더링
+            });
+            
+            // 1초 후 화살표 상태 재확인 (레이아웃 완료 후)
+            setTimeout(updateNavigationArrows, 1000);
             
             // 1분마다 시간 업데이트
             setInterval(updateDateTime, 60000);
