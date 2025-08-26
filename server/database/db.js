@@ -34,13 +34,14 @@ async function createStore(storeData) {
     email,
     address,
     naverStoreUrl,
+    naverStoreId,
     planType,
     deviceCount
   } = storeData;
 
   const query = `
-    INSERT INTO stores (business_number, store_name, owner_name, phone, email, address, naver_store_url, plan_type, device_count)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    INSERT INTO stores (business_number, store_name, owner_name, phone, email, address, naver_store_url, naver_store_id, plan_type, device_count)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING id, business_number, store_name, created_at
   `;
 
@@ -52,6 +53,7 @@ async function createStore(storeData) {
     email,
     address,
     naverStoreUrl,
+    naverStoreId || null,
     planType,
     deviceCount
   ];

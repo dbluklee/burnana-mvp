@@ -20,11 +20,36 @@ services:
       - DB_NAME=burnana_dev
       - DB_USER=dev_user
       - DB_PASS=dev_password
+      - PYTHON_SERVICE_HOST=python-processor
+      - PYTHON_SERVICE_PORT=8000
     depends_on:
       - postgres
       - redis
+      - python-processor
     networks:
       - burnana-network
+
+  python-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./scripts:/app/scripts
+      - python_outputs:/app/scripts/output
+    environment:
+      - PYTHONPATH=/app/scripts
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    networks:
+      - burnana-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   postgres:
     image: postgres:15-alpine
@@ -49,6 +74,7 @@ services:
 
 volumes:
   postgres_data:
+  python_outputs:
 
 networks:
   burnana-network:

@@ -54,3 +54,23 @@ Thumbs.db
 # Database
 *.sqlite
 *.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python script outputs
+scripts/output/
+scripts/*.log
+scripts/python_server.log

@@ -2,14 +2,15 @@
 const express = require('express');
 const router = express.Router();
 
-// 데이터베이스 및 네이버 스크래핑 모듈
+// 데이터베이스 모듈
 const { 
   createStore, 
   checkDuplicateStore, 
   saveMenus, 
   getMenusByStore 
 } = require('../database/db');
-const { scrapeNaverMenu, extractStoreInfo } = require('../services/naver-scraper');
+const { runPostSignupScript } = require('../utils/python-runner');
+const NaverUrlParser = require('../utils/naver-url-parser');
 
 // 회원가입 API
 router.post('/signup', async (req, res) => {
@@ -46,14 +47,23 @@ router.post('/signup', async (req, res) => {
       });
     }
 
-    // 2단계: 네이버 메뉴 스크래핑 (백그라운드에서 진행)
-    let menuPromise = null;
-    let storeInfoPromise = null;
-    
+    // 2단계: 네이버 링크에서 가게 ID 추출
+    let naverStoreId = null;
     if (naverStoreUrl) {
-      console.log(`🕷️ [${storeName}] 네이버 메뉴 스크래핑 시작`);
-      menuPromise = scrapeNaverMenu(naverStoreUrl);
-      storeInfoPromise = extractStoreInfo(naverStoreUrl);
+      console.log(`🔍 [${storeName}] 네이버 링크에서 가게 ID 추출 시작`);
+      
+      try {
+        const naverParser = new NaverUrlParser();
+        naverStoreId = await naverParser.extractStoreId(naverStoreUrl);
+        
+        if (naverStoreId) {
+          console.log(`✅ [${storeName}] 네이버 가게 ID 추출 성공: ${naverStoreId}`);
+        } else {
+          console.log(`⚠️ [${storeName}] 네이버 가게 ID 추출 실패`);
+        }
+      } catch (error) {
+        console.error(`❌ [${storeName}] 네이버 링크 파싱 오류:`, error.message);
+      }
     }
 
     // 3단계: 매장 정보 저장
@@ -65,6 +75,7 @@ router.post('/signup', async (req, res) => {
       email,
       address,
       naverStoreUrl,
+      naverStoreId,
       planType,
       deviceCount: planType === 'integrated' ? deviceCount : 0
     };
@@ -72,31 +83,30 @@ router.post('/signup', async (req, res) => {
     const newStore = await createStore(storeData);
     console.log(`🏪 [매장 ${newStore.id}] 매장 등록 완료: ${newStore.store_name}`);
 
-    // 4단계: 네이버 스크래핑 결과 처리
-    let menuCount = 0;
-    let scrapingSuccess = false;
-
-    if (menuPromise) {
-      try {
-        const [scrapedMenus, storeInfo] = await Promise.all([
-          menuPromise,
-          storeInfoPromise || Promise.resolve({})
-        ]);
-
-        if (scrapedMenus && scrapedMenus.length > 0) {
-          await saveMenus(newStore.id, scrapedMenus);
-          menuCount = scrapedMenus.length;
-          scrapingSuccess = true;
-          
-          console.log(`🍽️ [매장 ${newStore.id}] 네이버 메뉴 ${menuCount}개 저장 완료`);
-        }
-      } catch (scrapingError) {
-        console.error(`❌ [매장 ${newStore.id}] 네이버 스크래핑 실패:`, scrapingError.message);
-        // 스크래핑 실패해도 가입은 완료
-      }
+    // 4단계: 네이버 가게 ID 처리 완료
+    if (naverStoreId) {
+      console.log(`✅ [매장 ${newStore.id}] 네이버 가게 ID 저장 완료: ${naverStoreId}`);
     }
 
-    // 5단계: 성공 응답
+    // 5단계: 파이썬 후처리 스크립트 실행 (백그라운드)
+    let postProcessingResult = null;
+    if (naverStoreUrl) {
+      console.log(`🎯 [매장 ${newStore.id}] 파이썬 후처리 스크립트 실행 시작`);
+      
+      // 백그라운드에서 파이썬 스크립트 실행 (응답을 기다리지 않음)
+      runPostSignupScript(newStore, naverStoreUrl)
+        .then(result => {
+          console.log(`🎯 [매장 ${newStore.id}] 파이썬 후처리 완료:`, result.success ? '성공' : '실패');
+          if (!result.success) {
+            console.error(`❌ [매장 ${newStore.id}] 파이썬 후처리 오류:`, result.error);
+          }
+        })
+        .catch(error => {
+          console.error(`❌ [매장 ${newStore.id}] 파이썬 후처리 예외:`, error);
+        });
+    }
+
+    // 6단계: 성공 응답
     const responseData = {
       success: true,
       message: `🎉 ${storeName} 가입이 완료되었습니다!`,
@@ -107,19 +117,26 @@ router.post('/signup', async (req, res) => {
       createdAt: newStore.created_at
     };
 
-    // 네이버 메뉴 스크래핑 결과 추가
+    // 네이버 가게 ID 정보 추가
+    if (naverStoreId) {
+      responseData.naverStore = {
+        storeId: naverStoreId,
+        originalUrl: naverStoreUrl,
+        standardUrl: `https://smartplace.naver.com/restaurant/${naverStoreId}`,
+        message: `네이버 가게 ID ${naverStoreId}가 성공적으로 추출되었습니다!`
+      };
+    }
+
+    // 파이썬 후처리 정보 추가
     if (naverStoreUrl) {
-      responseData.menuScraping = {
-        success: scrapingSuccess,
-        menuCount,
-        message: scrapingSuccess 
-          ? `네이버에서 메뉴 ${menuCount}개를 자동으로 등록했습니다!`
-          : '네이버 메뉴 가져오기에 실패했습니다. 직접 메뉴를 등록해주세요.'
+      responseData.postProcessing = {
+        initiated: true,
+        message: '네이버 링크 기반 후처리가 시작되었습니다.'
       };
     }
 
     // 가입 완료 로그
-    console.log(`✅ [매장 ${newStore.id}] 가입 완료 - 플랜: ${planType}, 메뉴: ${menuCount}개`);
+    console.log(`✅ [매장 ${newStore.id}] 가입 완료 - 플랜: ${planType}, 네이버 ID: ${naverStoreId || '없음'}`);
 
     res.status(201).json(responseData);
 
@@ -185,7 +202,13 @@ function validateSignupData(data) {
   if (data.naverStoreUrl) {
     try {
       const url = new URL(data.naverStoreUrl);
-      if (!url.hostname.includes('naver.com')) {
+      // naver.com, naver.me, smartplace.naver.com 등 네이버 관련 도메인 허용
+      const naverDomains = ['naver.com', 'naver.me', 'smartplace.naver.com'];
+      const isValidNaverDomain = naverDomains.some(domain => 
+        url.hostname.includes(domain)
+      );
+      
+      if (!isValidNaverDomain) {
         errors.push('올바른 네이버 가게 URL이 아닙니다.');
       }
     } catch {

@@ -9,6 +9,7 @@ const cors = require('cors');
 const { OllamaClient, toolHandlers, MENU, SYSTEM_PROMPT } = require('./ai/order-assistant');
 const { router: tableRouter, validateQRToken, updateTableState } = require('./routes/table');
 const authRouter = require('./routes/auth');
+const dbMonitor = require('./services/db-monitor');
 
 const app = express();
 const server = http.createServer(app);
@@ -388,11 +389,23 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log('\n🚀 Burnana MVP 서버 실행 중!');
   console.log(`📍 서버 주소: http://localhost:${PORT}`);
   console.log(`🤖 AI 서버: http://${process.env.OLLAMA_HOST || '112.148.37.41:1884'}`);
   console.log(`🧠 AI 모델: gemma3:27b-it-q4_K_M`);
+  
+  // DB 모니터 시작
+  try {
+    const connected = await dbMonitor.connect();
+    if (connected) {
+      await dbMonitor.startListening();
+      console.log('🔔 DB 모니터링 시작됨');
+    }
+  } catch (error) {
+    console.error('❌ DB 모니터 시작 실패:', error.message);
+  }
+  
   console.log('\n📱 테스트 URL:');
   console.log(`   홈페이지: http://localhost:${PORT}`);
   console.log(`   가입페이지: http://localhost:${PORT}/signup`);
@@ -409,12 +422,22 @@ server.listen(PORT, () => {
   console.log('   • 자동 토큰 정리: 5분마다');
   console.log('   • 실시간 Socket.IO 업데이트');
   console.log('   • 채팅 세션 관리');
+  console.log('   • 실시간 DB 모니터링');
   console.log('\n✨ MVP 준비 완료! 테스트를 시작하세요.');
 });
 
 // 정상 종료 처리
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   console.log('\n🛑 서버가 정상적으로 종료됩니다...');
+  
+  // DB 모니터 정지
+  try {
+    await dbMonitor.stop();
+    console.log('🔔 DB 모니터 정지 완료');
+  } catch (error) {
+    console.error('❌ DB 모니터 정지 실패:', error.message);
+  }
+  
   server.close(() => {
     console.log('✅ 서버 종료 완료');
     process.exit(0);
