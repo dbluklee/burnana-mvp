@@ -8,6 +8,7 @@ const cors = require('cors');
 // AI 어시스턴트 및 테이블 라우터 import
 const { OllamaClient, toolHandlers, MENU, SYSTEM_PROMPT } = require('./ai/order-assistant');
 const { router: tableRouter, validateQRToken, updateTableState } = require('./routes/table');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +37,12 @@ tableRouter.io = io;
 
 // 라우터 등록
 app.use('/api/table', tableRouter);
+app.use('/api', authRouter);
+
+// 가입 페이지
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/signup/index.html'));
+});
 
 // 기본 라우트
 app.get('/', (req, res) => {
@@ -388,6 +395,7 @@ server.listen(PORT, () => {
   console.log(`🧠 AI 모델: gemma3:27b-it-q4_K_M`);
   console.log('\n📱 테스트 URL:');
   console.log(`   홈페이지: http://localhost:${PORT}`);
+  console.log(`   가입페이지: http://localhost:${PORT}/signup`);
   console.log(`   대시보드: http://localhost:${PORT}/dashboard`);
   console.log(`   QR 생성: http://localhost:${PORT}/api/table/qr/1`);
   console.log(`   메뉴 API: http://localhost:${PORT}/api/menu`);

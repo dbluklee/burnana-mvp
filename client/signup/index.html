@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burnana 가입</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .features {
+            list-style: none;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .feature-icon {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .form-section {
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+            background: white;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input.error {
+            border-color: #ef4444;
+        }
+
+        .textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+            padding: 8px;
+            background: #f0f9ff;
+            border-radius: 4px;
+        }
+
+        .plan-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .plan-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .plan-card:hover {
+            border-color: #667eea;
+        }
+
+        .plan-card.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .plan-name {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .plan-price {
+            font-size: 13px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .plan-features {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .device-input {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .device-input.show {
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                margin: 10px;
+            }
+            
+            .hero {
+                padding: 30px 20px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .plan-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <div class="logo">🍽️ Burnana</div>
+            <div class="tagline">AI 기반 스마트 테이블 오더 서비스</div>
+            
+            <ul class="features">
+                <li class="feature">
+                    <span class="feature-icon">🤖</span>
+                    AI 챗봇 자동 주문
+                </li>
+                <li class="feature">
+                    <span class="feature-icon">📱</span>
+                    QR 코드 간편 주문
+                </li>
+                <li class="feature">
+                    <span class="feature-icon">⚡</span>
+                    실시간 매장 관리
+                </li>
+                <li class="feature">
+                    <span class="feature-icon">💳</span>
+                    다양한 결제 지원
+                </li>
+                <li class="feature">
+                    <span class="feature-icon">🔗</span>
+                    네이버 메뉴 자동 연동
+                </li>
+            </ul>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-title">무료 가입</h2>
+            <p class="form-subtitle">3분만에 시작하세요</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="signupForm" novalidate>
+                <div class="form-group">
+                    <label class="label required" for="businessNumber">사업자등록번호</label>
+                    <input 
+                        type="text" 
+                        class="input" 
+                        id="businessNumber" 
+                        name="businessNumber"
+                        placeholder="123-45-67890" 
+                        maxlength="12"
+                        autocomplete="off"
+                        required>
+                    <div class="error-text" id="businessNumberError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label required" for="storeName">상호명</label>
+                    <input 
+                        type="text" 
+                        class="input" 
+                        id="storeName" 
+                        name="storeName"
+                        placeholder="우리 맛집"
+                        autocomplete="organization"
+                        required>
+                    <div class="error-text" id="storeNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label required" for="ownerName">대표자명</label>
+                    <input 
+                        type="text" 
+                        class="input" 
+                        id="ownerName" 
+                        name="ownerName"
+                        placeholder="홍길동"
+                        autocomplete="name"
+                        required>
+                    <div class="error-text" id="ownerNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label required" for="phone">연락처</label>
+                    <input 
+                        type="tel" 
+                        class="input" 
+                        id="phone" 
+                        name="phone"
+                        placeholder="010-1234-5678"
+                        autocomplete="tel"
+                        required>
+                    <div class="error-text" id="phoneError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="email">이메일</label>
+                    <input 
+                        type="email" 
+                        class="input" 
+                        id="email" 
+                        name="email"
+                        placeholder="example@email.com"
+                        autocomplete="email">
+                    <div class="error-text" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label required" for="address">매장 주소</label>
+                    <textarea 
+                        class="input textarea" 
+                        id="address" 
+                        name="address"
+                        placeholder="서울시 강남구 테스트로 123"
+                        autocomplete="street-address"
+                        required></textarea>
+                    <div class="error-text" id="addressError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="naverUrl">네이버 가게 URL (선택)</label>
+                    <input 
+                        type="url" 
+                        class="input" 
+                        id="naverUrl" 
+                        name="naverUrl"
+                        placeholder="https://store.naver.com/restaurants/detail?id=...">
+                    <div class="help-text">
+                        네이버 가게 URL을 입력하시면 메뉴를 자동으로 불러와 등록해드립니다!
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label required">서비스 플랜</label>
+                    <div class="plan-selector">
+                        <div class="plan-card active" data-plan="mobile" role="button" tabindex="0">
+                            <div class="plan-name">모바일 전용</div>
+                            <div class="plan-price">무료</div>
+                            <div class="plan-features">
+                                • QR 주문<br>
+                                • 모바일 결제<br>
+                                • 기본 대시보드
+                            </div>
+                        </div>
+                        <div class="plan-card" data-plan="integrated" role="button" tabindex="0">
+                            <div class="plan-name">통합 서비스</div>
+                            <div class="plan-price">디바이스당 30,000원</div>
+                            <div class="plan-features">
+                                • 모든 기능<br>
+                                • 카드 결제<br>
+                                • 스마트 디바이스
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-input" id="deviceInput">
+                        <label class="label" for="deviceCount">스마트 디바이스 수량</label>
+                        <input 
+                            type="number" 
+                            class="input" 
+                            id="deviceCount" 
+                            name="deviceCount"
+                            min="1" 
+                            max="50" 
+                            value="8" 
+                            placeholder="8">
+                        <div class="help-text">
+                            권장: 테이블 수와 동일 (예: 8개 테이블 = 8개 디바이스)
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span id="submitText">가입하고 서비스 시작하기</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let selectedPlan = 'mobile';
+        let isSubmitting = false;
+
+        // DOM 로드 완료 후 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료');
+            initForm();
+        });
+
+        function initForm() {
+            console.log('폼 초기화 시작');
+            
+            // 입력 필드 접근 테스트
+            const businessInput = document.getElementById('businessNumber');
+            if (businessInput) {
+                console.log('사업자번호 필드 발견');
+                businessInput.focus(); // 첫 번째 필드에 포커스
+            } else {
+                console.error('사업자번호 필드를 찾을 수 없음');
+            }
+            
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            console.log('이벤트 리스너 설정');
+
+            // 플랜 선택 이벤트
+            const planCards = document.querySelectorAll('.plan-card');
+            planCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    selectPlan(this.dataset.plan);
+                });
+                
+                // 키보드 접근성
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectPlan(this.dataset.plan);
+                    }
+                });
+            });
+
+            // 사업자등록번호 포맷팅
+            const businessInput = document.getElementById('businessNumber');
+            if (businessInput) {
+                businessInput.addEventListener('input', function(e) {
+                    console.log('사업자번호 입력:', e.target.value);
+                    formatBusinessNumber(e);
+                });
+                
+                businessInput.addEventListener('blur', validateBusinessNumber);
+            }
+
+            // 전화번호 포맷팅
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', formatPhoneNumber);
+                phoneInput.addEventListener('blur', validatePhone);
+            }
+
+            // 이메일 검증
+            const emailInput = document.getElementById('email');
+            if (emailInput) {
+                emailInput.addEventListener('blur', validateEmail);
+            }
+
+            // 폼 제출
+            const form = document.getElementById('signupForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('폼 제출 시도');
+                    handleSubmit();
+                });
+            }
+        }
+
+        function selectPlan(plan) {
+            console.log('플랜 선택:', plan);
+            selectedPlan = plan;
+
+            // 모든 카드에서 active 제거
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // 선택된 카드에 active 추가
+            const selectedCard = document.querySelector(`[data-plan="${plan}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('active');
+            }
+
+            // 디바이스 수량 입력 표시/숨김
+            const deviceInput = document.getElementById('deviceInput');
+            if (deviceInput) {
+                if (plan === 'integrated') {
+                    deviceInput.classList.add('show');
+                } else {
+                    deviceInput.classList.remove('show');
+                }
+            }
+        }
+
+        function formatBusinessNumber(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length >= 3 && value.length <= 5) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            } else if (value.length > 5) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 5) + '-' + value.substring(5, 10);
+            }
+            
+            e.target.value = value;
+        }
+
+        function formatPhoneNumber(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length >= 3 && value.length <= 7) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            } else if (value.length > 7) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7, 11);
+            }
+            
+            e.target.value = value;
+        }
+
+        function validateBusinessNumber() {
+            const input = document.getElementById('businessNumber');
+            const value = input.value.replace(/\D/g, '');
+            
+            if (value.length !== 10) {
+                showError('businessNumber', '사업자등록번호는 10자리여야 합니다.');
+                return false;
+            }
+            
+            clearError('businessNumber');
+            return true;
+        }
+
+        function validatePhone() {
+            const input = document.getElementById('phone');
+            const value = input.value.replace(/\D/g, '');
+            
+            if (value.length < 10 || value.length > 11) {
+                showError('phone', '올바른 전화번호를 입력해주세요.');
+                return false;
+            }
+            
+            clearError('phone');
+            return true;
+        }
+
+        function validateEmail() {
+            const input = document.getElementById('email');
+            const value = input.value.trim();
+            
+            if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                showError('email', '올바른 이메일 형식이 아닙니다.');
+                return false;
+            }
+            
+            clearError('email');
+            return true;
+        }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            if (input) input.classList.add('error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function clearError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            if (input) input.classList.remove('error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+
+        function showAlert(message, type = 'error') {
+            const alert = document.getElementById('alert');
+            if (alert) {
+                alert.textContent = message;
+                alert.className = `alert ${type}`;
+                alert.style.display = 'block';
+                
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function getFormData() {
+            const formData = {
+                businessNumber: document.getElementById('businessNumber').value.replace(/\D/g, ''),
+                storeName: document.getElementById('storeName').value.trim(),
+                ownerName: document.getElementById('ownerName').value.trim(),
+                phone: document.getElementById('phone').value.replace(/\D/g, ''),
+                email: document.getElementById('email').value.trim() || null,
+                address: document.getElementById('address').value.trim(),
+                naverStoreUrl: document.getElementById('naverUrl').value.trim() || null,
+                planType: selectedPlan,
+                deviceCount: selectedPlan === 'integrated' ? 
+                    parseInt(document.getElementById('deviceCount').value) || 8 : 0
+            };
+            
+            console.log('폼 데이터 수집:', formData);
+            return formData;
+        }
+
+        function validateForm() {
+            let isValid = true;
+            
+            const requiredFields = [
+                { id: 'businessNumber', name: '사업자등록번호' },
+                { id: 'storeName', name: '상호명' },
+                { id: 'ownerName', name: '대표자명' },
+                { id: 'phone', name: '연락처' },
+                { id: 'address', name: '매장 주소' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field.id);
+                if (!input.value.trim()) {
+                    showError(field.id, `${field.name}을(를) 입력해주세요.`);
+                    isValid = false;
+                } else {
+                    clearError(field.id);
+                }
+            });
+
+            // 개별 유효성 검사
+            if (document.getElementById('businessNumber').value.trim()) {
+                if (!validateBusinessNumber()) isValid = false;
+            }
+            
+            if (document.getElementById('phone').value.trim()) {
+                if (!validatePhone()) isValid = false;
+            }
+            
+            if (document.getElementById('email').value.trim()) {
+                if (!validateEmail()) isValid = false;
+            }
+
+            return isValid;
+        }
+
+        async function handleSubmit() {
+            if (isSubmitting) return;
+
+            console.log('폼 제출 처리 시작');
+
+            if (!validateForm()) {
+                showAlert('입력 정보를 확인해주세요.');
+                return;
+            }
+
+            isSubmitting = true;
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                if (submitText) {
+                    submitText.innerHTML = '<span class="spinner"></span>가입 처리 중...';
+                }
+            }
+
+            try {
+                const formData = getFormData();
+
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log('서버 응답:', result);
+
+                if (response.ok) {
+                    showAlert(result.message || '가입이 완료되었습니다!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = `/dashboard?store=${result.storeId}`;
+                    }, 2000);
+                    
+                } else {
+                    throw new Error(result.error || '가입 처리 중 오류가 발생했습니다.');
+                }
+
+            } catch (error) {
+                console.error('가입 오류:', error);
+                showAlert(error.message);
+            } finally {
+                isSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    if (submitText) {
+                        submitText.textContent = '가입하고 서비스 시작하기';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

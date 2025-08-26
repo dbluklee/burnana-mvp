@@ -15,6 +15,28 @@ services:
       - NODE_ENV=development
       - OLLAMA_HOST=112.148.37.41:1884
       - BASE_URL=http://localhost:3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=burnana_dev
+      - DB_USER=dev_user
+      - DB_PASS=dev_password
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - burnana-network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: burnana_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - burnana-network
 
@@ -24,6 +46,9 @@ services:
       - "6379:6379"
     networks:
       - burnana-network
+
+volumes:
+  postgres_data:
 
 networks:
   burnana-network:
