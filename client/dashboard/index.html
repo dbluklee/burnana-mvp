@@ -21,12 +21,178 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            position: relative;
+        }
+
+        /* 사이드 메뉴 */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -20rem;
+            width: 20rem;
+            height: 100vh;
+            background: #1a1a1a;
+            color: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .side-menu-header {
+            padding: 2rem 1.5rem 1rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        .back-arrow {
+            font-weight: bold;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+        }
+
+        .side-menu-nav {
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #cccccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #333;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #333;
+            color: white;
+            border-left-color: #4a90e2;
+        }
+
+
+
+        .side-menu-users {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #333;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #4a90e2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-status {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .side-menu-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #333;
+        }
+
+        .copyright {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* 페이지 컨텐츠 */
+        .page-content {
+            display: grid;
+            grid-template-columns: 1fr 25vw;
+            flex: 1;
+            gap: 0;
+            height: calc(100vh - 5rem);
+            overflow: hidden;
+        }
+
+        .page-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #cccccc;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .page-placeholder h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .page-placeholder p {
+            font-size: 1.1rem;
+            color: #888;
         }
 
         .main-header {
             background: #000000;
             color: white;
-            padding: 1.25rem 3.75rem;
+            padding: 1.25rem 1.875rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -36,12 +202,41 @@
             max-height: 5rem;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .hamburger-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .hamburger-line {
+            width: 1.5rem;
+            height: 0.125rem;
+            background: #ffffff;
+            border-radius: 0.0625rem;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover .hamburger-line {
+            background: #cccccc;
+        }
+
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 25vw;
             flex: 1;
-            gap: 0;
-            height: calc(100vh - 5rem);
             overflow: hidden;
         }
 
@@ -183,9 +378,58 @@
             flex-direction: column;
         }
 
-        .table-card:hover {
-            border-color: #4a90e2;
-            transform: translateY(-0.125rem);
+        .table-card {
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+
+        /* 프레싱 상태 (누르는 중) */
+        .table-card.pressing {
+            transform: translateY(0.0625rem) scale(0.98);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
+            transition: all 0.1s ease;
+        }
+
+        /* 프레스드 상태 (길게 누름) */
+        .table-card.pressed {
+            transform: translateY(0.125rem) scale(0.95);
+            box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 클릭 상태 (짧은 클릭) */
+        .table-card.clicked {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        /* 리플 효과 */
+        .table-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+            pointer-events: none;
+        }
+
+        .table-card.pressed::after {
+            width: 200%;
+            height: 200%;
         }
 
         .table-card.active {
@@ -438,6 +682,8 @@
             border-left-color: #6b7280;
         }
 
+
+
         /* 태블릿 반응형 */
         @media (max-width: 1024px) {
             .main-content {
@@ -497,10 +743,26 @@
             }
 
             .main-header {
-                padding: 1rem 2rem;
+                padding: 1rem 1.5rem;
                 height: 5rem;
                 min-height: 5rem;
                 max-height: 5rem;
+            }
+
+            .header-left {
+                gap: 0.8rem;
+            }
+
+            .hamburger-btn {
+                width: 1.8rem;
+                height: 1.8rem;
+                gap: 0.2rem;
+                margin-right: 0.4rem;
+            }
+
+            .hamburger-line {
+                width: 1.3rem;
+                height: 0.1rem;
             }
 
             .restaurant-name,
@@ -587,55 +849,132 @@
 </head>
 <body>
     <div class="dashboard">
+        <!-- 사이드 메뉴 -->
+        <div class="side-menu" id="sideMenu">
+            <div class="side-menu-header">
+                <button class="back-btn" id="backBtn">
+                    <span class="back-arrow">‹</span>
+                </button>
+                <h1 class="service-title">Burnana POS</h1>
+            </div>
+            <nav class="side-menu-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-page="menu">
+                    Menu
+                </a>
+                <a href="#" class="nav-item" data-page="table">
+                    Table
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    Settings
+                </a>
+            </nav>
+            <div class="side-menu-users">
+                <div class="user-item">
+                    <div class="user-avatar">W</div>
+                    <div class="user-info">
+                        <div class="user-name">Woongki Lee</div>
+                        <div class="user-status">현재 사용자</div>
+                    </div>
+                </div>
+                <div class="user-item">
+                    <div class="user-avatar">J</div>
+                    <div class="user-info">
+                        <div class="user-name">James J.</div>
+                        <div class="user-status">다른 테블릿</div>
+                    </div>
+                </div>
+            </div>
+            <div class="side-menu-footer">
+                <div class="copyright">© 2025 CHEESEADE Corp.</div>
+            </div>
+        </div>
+
         <!-- 메인 헤더 -->
         <div class="main-header">
-            <div class="restaurant-name">웅갈비</div>
+            <div class="header-left">
+                <button class="hamburger-btn" id="hamburgerBtn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <div class="restaurant-name">웅갈비</div>
+            </div>
             <div class="dashboard-title">Dashboard</div>
             <div class="datetime" id="datetime"></div>
         </div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
-            <!-- 메인 섹션 -->
-            <div class="main-section">
-                <!-- 네비게이션 바 -->
-                <div class="nav-bar">
-                    <div class="room-tabs-container">
-                        <div class="room-tabs" id="roomTabs">
-                            <button class="room-tab active">1st floor</button>
-                            <button class="room-tab">2nd floor</button>
-                            <button class="room-tab">3rd floor</button>
-                            <button class="room-tab">VIP floor</button>
-                            <button class="room-tab">Outdoor</button>
-                            <button class="room-tab">Bar floor</button>
-                            <button class="room-tab">Private floor</button>
-                            <button class="room-tab">Meeting floor</button>
-                            <button class="room-tab">Event floor</button>
-                            <button class="room-tab">Rooftop</button>
+            <!-- Dashboard 페이지 -->
+            <div class="page-content" id="dashboardPage" data-page="dashboard">
+                <!-- 메인 섹션 -->
+                <div class="main-section">
+                    <!-- 네비게이션 바 -->
+                    <div class="nav-bar">
+                        <div class="room-tabs-container">
+                            <div class="room-tabs" id="roomTabs">
+                                <button class="room-tab active">1st floor</button>
+                                <button class="room-tab">2nd floor</button>
+                                <button class="room-tab">3rd floor</button>
+                                <button class="room-tab">VIP floor</button>
+                                <button class="room-tab">Outdoor</button>
+                                <button class="room-tab">Bar floor</button>
+                                <button class="room-tab">Private floor</button>
+                                <button class="room-tab">Meeting floor</button>
+                                <button class="room-tab">Event floor</button>
+                                <button class="room-tab">Rooftop</button>
+                            </div>
+                        </div>
+                        <div class="nav-controls">
+                            <button class="nav-arrow" id="navLeft">‹</button>
+                            <button class="nav-arrow" id="navRight">›</button>
+                            <button class="settings-btn">⚙</button>
                         </div>
                     </div>
-                    <div class="nav-controls">
-                        <button class="nav-arrow" id="navLeft">‹</button>
-                        <button class="nav-arrow" id="navRight">›</button>
-                        <button class="settings-btn">⚙</button>
+
+                    <!-- 테이블 컨테이너 -->
+                    <div class="tables-container">
+                        <div class="tables-grid" id="tablesGrid">
+                            <!-- 테이블 카드들이 여기에 동적으로 생성됩니다 -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- 테이블 컨테이너 -->
-                <div class="tables-container">
-                    <div class="tables-grid" id="tablesGrid">
-                        <!-- 테이블 카드들이 여기에 동적으로 생성됩니다 -->
+                <!-- 사이드 패널 -->
+                <div class="side-panel">
+                    <div class="inspector-container">
+                        <div class="panel-title">진행상황</div>
+                        <div class="activity-log" id="activityLog">
+                            <!-- 로그 항목들이 여기에 동적으로 생성됩니다 -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 사이드 패널 -->
-            <div class="side-panel">
-                <div class="inspector-container">
-                    <div class="panel-title">진행상황</div>
-                    <div class="activity-log" id="activityLog">
-                        <!-- 로그 항목들이 여기에 동적으로 생성됩니다 -->
-                    </div>
+            <!-- Menu 페이지 -->
+            <div class="page-content" id="menuPage" data-page="menu" style="display: none;">
+                <div class="page-placeholder">
+                    <h2>Menu 페이지</h2>
+                    <p>메뉴 관리 기능이 여기에 구현됩니다.</p>
+                </div>
+            </div>
+
+            <!-- Table 페이지 -->
+            <div class="page-content" id="tablePage" data-page="table" style="display: none;">
+                <div class="page-placeholder">
+                    <h2>Table 페이지</h2>
+                    <p>테이블 관리 기능이 여기에 구현됩니다.</p>
+                </div>
+            </div>
+
+            <!-- Settings 페이지 -->
+            <div class="page-content" id="settingsPage" data-page="settings" style="display: none;">
+                <div class="page-placeholder">
+                    <h2>Settings 페이지</h2>
+                    <p>설정 기능이 여기에 구현됩니다.</p>
                 </div>
             </div>
         </div>
@@ -697,6 +1036,9 @@
                     tableCard.innerHTML = createTableCardHTML(i, 'Room 1', '--:--', 0, [], 0);
                 }
 
+                // 테이블 카드 클릭 이벤트 추가
+                setupTableCardEvents(tableCard, i);
+                
                 tablesGrid.appendChild(tableCard);
             }
         }
@@ -907,6 +1249,148 @@
             updateNavigationArrows();
         }
 
+        // 햄버거 버튼 클릭 이벤트
+        function setupHamburgerBtn() {
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sideMenu = document.getElementById('sideMenu');
+            
+            hamburgerBtn.addEventListener('click', function() {
+                console.log('햄버거 메뉴 클릭됨');
+                sideMenu.classList.toggle('open');
+            });
+
+            // 사이드 메뉴 외부 클릭 시 닫기
+            document.addEventListener('click', function(event) {
+                if (!sideMenu.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+                    sideMenu.classList.remove('open');
+                }
+            });
+
+            // Back 버튼 클릭 이벤트
+            const backBtn = document.getElementById('backBtn');
+            backBtn.addEventListener('click', function() {
+                sideMenu.classList.remove('open');
+            });
+        }
+
+        // 사이드 메뉴 네비게이션 이벤트
+        function setupSideMenuNav() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 모든 네비게이션 아이템에서 active 클래스 제거
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // 클릭된 아이템에 active 클래스 추가
+                    this.classList.add('active');
+                    
+                    const page = this.getAttribute('data-page');
+                    console.log('페이지 변경:', page);
+                    
+                    // 페이지 전환
+                    switchPage(page);
+                    
+                    // 사이드 메뉴 닫기
+                    document.getElementById('sideMenu').classList.remove('open');
+                });
+            });
+        }
+
+        // 페이지 전환 함수
+        function switchPage(pageName) {
+            // 모든 페이지 숨기기
+            const allPages = document.querySelectorAll('.page-content');
+            allPages.forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // 선택된 페이지 보이기
+            const targetPage = document.getElementById(pageName + 'Page');
+            if (targetPage) {
+                targetPage.style.display = 'grid';
+            }
+            
+            // 헤더 타이틀 업데이트
+            const dashboardTitle = document.querySelector('.dashboard-title');
+            if (dashboardTitle) {
+                dashboardTitle.textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1);
+            }
+        }
+
+        // 테이블 카드 이벤트 설정
+        function setupTableCardEvents(card, tableNumber) {
+            let pressTimer = null;
+            let isPressed = false;
+            let startTime = 0;
+            
+            // 터치/마우스 시작
+            const handleStart = (e) => {
+                e.preventDefault();
+                isPressed = true;
+                startTime = Date.now();
+                
+                // 프레스 타이머 시작 (500ms)
+                pressTimer = setTimeout(() => {
+                    if (isPressed) {
+                        card.classList.add('pressed');
+                    }
+                }, 500);
+                
+                // 즉시 시각적 피드백
+                card.classList.add('pressing');
+            };
+            
+            // 터치/마우스 종료
+            const handleEnd = (e) => {
+                e.preventDefault();
+                isPressed = false;
+                
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+                
+                // 프레스 상태 제거
+                card.classList.remove('pressing', 'pressed');
+                
+                // 짧은 클릭 처리
+                const pressDuration = Date.now() - startTime;
+                if (pressDuration < 500) {
+                    card.classList.add('clicked');
+                    
+                    // 클릭 애니메이션 제거
+                    setTimeout(() => {
+                        card.classList.remove('clicked');
+                    }, 100);
+                }
+            };
+            
+            // 터치/마우스 이동 (취소)
+            const handleMove = (e) => {
+                if (isPressed) {
+                    isPressed = false;
+                    if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null;
+                    }
+                    card.classList.remove('pressing', 'pressed');
+                }
+            };
+            
+            // 이벤트 리스너 등록
+            card.addEventListener('mousedown', handleStart);
+            card.addEventListener('mouseup', handleEnd);
+            card.addEventListener('mouseleave', handleEnd);
+            card.addEventListener('mouseout', handleMove);
+            
+            // 터치 이벤트 (모바일/태블릿)
+            card.addEventListener('touchstart', handleStart, { passive: false });
+            card.addEventListener('touchend', handleEnd, { passive: false });
+            card.addEventListener('touchcancel', handleEnd, { passive: false });
+            card.addEventListener('touchmove', handleMove, { passive: false });
+        }
+
         // 공간 탭 클릭 이벤트
         function setupRoomTabs() {
             const roomTabs = document.querySelectorAll('.room-tab');
@@ -925,6 +1409,12 @@
             updateDateTime();
             createTables();
             createInitialLogs();
+            
+            // 햄버거 버튼 이벤트 설정
+            setupHamburgerBtn();
+            
+            // 사이드 메뉴 네비게이션 이벤트 설정
+            setupSideMenuNav();
             
             // 공간 탭 이벤트 설정
             setupRoomTabs();
